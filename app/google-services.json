@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "251689887456",
+    "firebase_url": "https://shelf-a7d22.firebaseio.com",
+    "project_id": "shelf-a7d22",
+    "storage_bucket": "shelf-a7d22.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:251689887456:android:d3268961f2628963",
+        "android_client_info": {
+          "package_name": "com.renzam.shelf"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "251689887456-kbv1k36f62i97ie7dep09irrem26dtah.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.renzam.shelf",
+            "certificate_hash": "d17c4fa4c447070654deace62bff6821b1d2a79c"
+          }
+        },
+        {
+          "client_id": "251689887456-an2ku4va7k7h66s5g4mk45d3s05sc2c3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAII8uGfz-q8pypO8GvzFE-2aAkB_T3pbM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "251689887456-an2ku4va7k7h66s5g4mk45d3s05sc2c3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
