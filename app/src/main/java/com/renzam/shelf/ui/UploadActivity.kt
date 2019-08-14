@@ -38,7 +38,6 @@ class UploadActivity : AppCompatActivity() {
     lateinit var locationManager: LocationManager
     lateinit var location: Location
 
-
     lateinit var bitmap: Bitmap
 
 
@@ -48,6 +47,8 @@ class UploadActivity : AppCompatActivity() {
 
     val imageName = UUID.randomUUID().toString() + ".jpg"
     var imagesRef: StorageReference? = storageRef.child("images")
+
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -81,9 +82,9 @@ class UploadActivity : AppCompatActivity() {
         uploadButton = findViewById(R.id.uploadButton)
 
         val adapter = ArrayAdapter(
-            this, // Context
-            android.R.layout.simple_spinner_item, // Layout
-            catogoreyList // Array
+            this,
+            android.R.layout.simple_spinner_item,
+            catogoreyList
         )
         adapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
 
@@ -97,8 +98,8 @@ class UploadActivity : AppCompatActivity() {
 
         }
 
-        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 1)
+        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+            requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),1)
         }
 
 
@@ -110,51 +111,87 @@ class UploadActivity : AppCompatActivity() {
         uploadButton.setOnClickListener {
 
 
-            locationManager = (getSystemService(Context.LOCATION_SERVICE) as LocationManager)
-            location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
-            var latitude = location.latitude
-            var longitude = location.longitude
+            val progressDialog = ProgressDialog(this)
+            progressDialog.setTitle("Uploading...")
+            progressDialog.show()
+
+            val baos = ByteArrayOutputStream()
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+            val data = baos.toByteArray()
 
 
 
-
-            photoUpload()
-
-
-            var shop = hashMapOf(
-                "userId" to FirebaseAuth.getInstance().currentUser?.uid,
-                "shopCatogorey" to spinCategory.selectedItem.toString(),
-                "businessName" to bussinesNameEditText.text.toString(),
-                "ownerName" to ownerNameEditText.text.toString(),
-                "ownerPhoneNum" to ownerPhoenNumberEditText.text.toString(),
-                "businessPlace" to placeNameEdittext.text.toString(),
-                "url" to "https://firebasestorage.googleapis.com/v0/b/shelf-a7d22.appspot.com/o/images%2F50c41036-8eaf-458a-910b-223732e19cfa.jpg?alt=media&token=d2d801c2-24a7-463b-8288-d5ea2b7779a0",
-                "latitude" to latitude,
-                "longitude" to longitude
-            )
+            val child = imagesRef?.child(imageName)
+            val uploadTask = child?.putBytes(data)
 
 
-            db.collection("shops")
-                .add(shop)
-                .addOnSuccessListener { documentReference ->
-                    Log.d("Document", "DocumentSnapshot added with ID: ${documentReference.id}")
-                    Toast.makeText(this, "Successfully added Document Good Job ", Toast.LENGTH_SHORT).show()
-                    bussinesNameEditText.setText("")
-                    ownerNameEditText.setText("")
-                    ownerPhoenNumberEditText.setText("")
-                    placeNameEdittext.setText("")
+            uploadTask?.addOnFailureListener {
+                Toast.makeText(this, "upload Failed", Toast.LENGTH_SHORT).show()
+                progressDialog.dismiss()
+            }?.addOnSuccessListener {
+
+                child.downloadUrl.addOnSuccessListener { Unit
+                    Toast.makeText(applicationContext, "Url : " + it.path, Toast.LENGTH_SHORT).show()
+                    Log.e("Image Url", "Url : " + it.path)
+                    Log.e("Image Url", "Url : " + it.toString())
+
+
+                    locationManager = (getSystemService(Context.LOCATION_SERVICE) as LocationManager)
+                    location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+                    var latitude = location.latitude
+                    var longitude = location.longitude
+
+                    var shop = hashMapOf(
+                        "userId" to FirebaseAuth.getInstance().currentUser?.uid,
+                        "shopCatogorey" to spinCategory.selectedItem.toString(),
+                        "businessName" to bussinesNameEditText.text.toString(),
+                        "ownerName" to ownerNameEditText.text.toString(),
+                        "ownerPhoneNum" to ownerPhoenNumberEditText.text.toString(),
+                        "businessPlace" to placeNameEdittext.text.toString(),
+                        "url" to it.toString(),
+                        "latitude" to latitude,
+                        "longitude" to longitude
+
+                    )
+
+
+                    db.collection("shops")
+                        .add(shop)
+                        .addOnSuccessListener { documentReference ->
+                            Log.d("Document", "DocumentSnapshot added with ID: ${documentReference.id}")
+                            Toast.makeText(this, "Successfully added Document Good Job ", Toast.LENGTH_SHORT).show()
+                            bussinesNameEditText.setText("")
+                            ownerNameEditText.setText("")
+                            ownerPhoenNumberEditText.setText("")
+                            placeNameEdittext.setText("")
+                        }
+                        .addOnFailureListener { e ->
+                            Log.w("Doc Error Occures", "Error adding document", e)
+                            Toast.makeText(this, "Sorry something went Wrong+$e", Toast.LENGTH_SHORT).show()
+                        }
+
+
+                }.addOnFailureListener {
+                    Unit
+                    Toast.makeText(applicationContext, "Failed : " + it.message, Toast.LENGTH_SHORT).show()
+                    Log.e("Error Image Url", "Failed : " + it.message)
+
+
                 }
-                .addOnFailureListener { e ->
-                    Log.w("Doc Error Occures", "Error adding document", e)
-                    Toast.makeText(this, "Sorry something went Wrong+$e", Toast.LENGTH_SHORT).show()
-                }
+                Toast.makeText(this, "uploaded", Toast.LENGTH_LONG).show()
+                progressDialog.dismiss()
+                uploadImageView.invalidate()
+                uploadImageView.setImageDrawable(getResources().getDrawable(R.drawable.ic_insert_photo))
+
+            }?.addOnProgressListener { taskSnapshot ->
+                val progress = 100.0 * taskSnapshot.bytesTransferred / taskSnapshot
+                    .totalByteCount
+                progressDialog.setMessage("Uploaded " + progress.toInt() + "%")
+            }
+
 
 
         }
-//        logOutButton.setOnClickListener {
-//
-
-//        }
 
 
         uploadImageView.setOnClickListener {
@@ -201,51 +238,6 @@ class UploadActivity : AppCompatActivity() {
         }
     }
 
-    private fun photoUpload() {
-
-        val progressDialog = ProgressDialog(this)
-        progressDialog.setTitle("Uploading...")
-        progressDialog.show()
-
-        val baos = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
-        val data = baos.toByteArray()
-
-
-        val child = imagesRef?.child(imageName)
-        val uploadTask = child?.putBytes(data)
-
-
-        uploadTask?.addOnFailureListener {
-            Toast.makeText(this, "upload Failed", Toast.LENGTH_SHORT).show()
-            progressDialog.dismiss()
-        }?.addOnSuccessListener {
-
-            child.downloadUrl.addOnSuccessListener {
-                Unit
-                Toast.makeText(applicationContext, "Url : " + it.path, Toast.LENGTH_SHORT).show()
-                Log.e("Image Url", "Url : " + it.path)
-                Log.e("Image Url", "Url : " + it.toString())
-
-
-            }.addOnFailureListener {
-                Unit
-                Toast.makeText(applicationContext, "Failed : " + it.message, Toast.LENGTH_SHORT).show()
-                Log.e("Error Image Url", "Failed : " + it.message)
-
-
-            }
-            Toast.makeText(this, "uploaded", Toast.LENGTH_LONG).show()
-            progressDialog.dismiss()
-            uploadImageView.invalidate()
-            uploadImageView.setImageDrawable(getResources().getDrawable(R.drawable.ic_insert_photo))
-
-        }?.addOnProgressListener { taskSnapshot ->
-            val progress = 100.0 * taskSnapshot.bytesTransferred / taskSnapshot
-                .totalByteCount
-            progressDialog.setMessage("Uploaded " + progress.toInt() + "%")
-        }
-    }
 
     override fun onBackPressed() {
         super.onBackPressed()
