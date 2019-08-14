@@ -5,8 +5,6 @@ import android.app.ProgressDialog
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.graphics.drawable.BitmapDrawable
-import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
@@ -14,38 +12,32 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProviders
-import com.firebase.ui.auth.AuthUI
-import com.google.android.gms.auth.api.signin.internal.Storage
-import com.google.android.gms.tasks.Continuation
-import com.google.android.gms.tasks.OnFailureListener
-import com.google.android.gms.tasks.OnSuccessListener
-import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
-import com.google.firebase.storage.UploadTask
 import com.renzam.shelf.R
-import io.grpc.Context
 import java.io.ByteArrayOutputStream
 import java.util.*
 import kotlin.collections.ArrayList
 
+@Suppress("RECEIVER_NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
 class UploadActivity : AppCompatActivity() {
 
     lateinit var bussinesNameEditText: EditText
     lateinit var ownerNameEditText: EditText
+    lateinit var placeNameEdittext: EditText
     lateinit var uploadButton: Button
     lateinit var uploadImageView: ImageView
     lateinit var spinCategory: Spinner
     lateinit var ownerPhoenNumberEditText: EditText
     lateinit var catogoreyList: ArrayList<String>
 
+    lateinit var Url: String
+
+
     lateinit var bitmap: Bitmap
 
-    var imageUrl = ""
 
     var storage = FirebaseStorage.getInstance()
 
@@ -55,12 +47,11 @@ class UploadActivity : AppCompatActivity() {
     var imagesRef: StorageReference? = storageRef.child("images")
 
 
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_upload)
-
-
-        val viewModel = ViewModelProviders.of(this).get(ViewModel::class.java)
 
         catogoreyList = ArrayList()
         catogoreyList.add("select Catogorey")
@@ -79,8 +70,12 @@ class UploadActivity : AppCompatActivity() {
         spinCategory = findViewById(R.id.spinner)
         ownerPhoenNumberEditText = findViewById(R.id.ownerPhoneEditText)
         bussinesNameEditText = findViewById(R.id.bussinessnameEditText)
+        placeNameEdittext = findViewById(R.id.placenameEditText)
         ownerNameEditText = findViewById(R.id.ownerNameEditText)
         uploadImageView = findViewById(R.id.uploadImageView)
+
+
+        uploadImageView.setImageDrawable(getResources().getDrawable(R.drawable.ic_insert_photo))
 
         uploadButton = findViewById(R.id.uploadButton)
 
@@ -109,12 +104,18 @@ class UploadActivity : AppCompatActivity() {
 
         uploadButton.setOnClickListener {
 
+
+
+            photoUpload()
+
+
             var shop = hashMapOf(
                 "userId" to FirebaseAuth.getInstance().currentUser?.uid,
                 "shopCatogorey" to spinCategory.selectedItem.toString(),
                 "businessName" to bussinesNameEditText.text.toString(),
                 "ownerName" to ownerNameEditText.text.toString(),
                 "ownerPhoneNum" to ownerPhoenNumberEditText.text.toString(),
+                "businessPlace" to placeNameEdittext.text.toString(),
                 "url" to "https://firebasestorage.googleapis.com/v0/b/shelf-a7d22.appspot.com/o/images%2F50c41036-8eaf-458a-910b-223732e19cfa.jpg?alt=media&token=d2d801c2-24a7-463b-8288-d5ea2b7779a0"
             )
 
@@ -133,7 +134,7 @@ class UploadActivity : AppCompatActivity() {
                     Toast.makeText(this, "Sorry something went Wrong+$e", Toast.LENGTH_SHORT).show()
                 }
 
-            photoUpload()
+
 
         }
 //        logOutButton.setOnClickListener {
@@ -145,11 +146,7 @@ class UploadActivity : AppCompatActivity() {
         uploadImageView.setOnClickListener {
 
             Toast.makeText(this, "you Clicked the Image View", Toast.LENGTH_LONG).show()
-
-
             getPhoto()
-
-
         }
 
 
@@ -179,7 +176,7 @@ class UploadActivity : AppCompatActivity() {
 
         if (requestCode == 1 && resultCode == RESULT_OK && data != null) {
             try {
-                val baos = ByteArrayOutputStream()
+                //val baos = ByteArrayOutputStream()
                 bitmap = MediaStore.Images.Media.getBitmap(this.contentResolver, selectedImage)
                 uploadImageView.setImageBitmap(bitmap)
 
@@ -200,44 +197,40 @@ class UploadActivity : AppCompatActivity() {
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
         val data = baos.toByteArray()
 
-        val uploadTask = imagesRef?.child(imageName)?.putBytes(data)
+
+
+        val child = imagesRef?.child(imageName)
+        val uploadTask = child?.putBytes(data)
+
 
         uploadTask?.addOnFailureListener {
             Toast.makeText(this, "upload Failed", Toast.LENGTH_SHORT).show()
             progressDialog.dismiss()
         }?.addOnSuccessListener {
 
+            child.downloadUrl.addOnSuccessListener { Unit
+                Toast.makeText(applicationContext, "Url : " + it.path, Toast.LENGTH_SHORT).show()
+                Log.e("Image Url", "Url : " + it.path)
+                Log.e("Image Url", "Url : " + it.toString())
+
+
+            }.addOnFailureListener {
+                Unit
+                Toast.makeText(applicationContext, "Failed : " + it.message, Toast.LENGTH_SHORT).show()
+                Log.e("Error Image Url", "Failed : " + it.message)
+
+
+            }
             Toast.makeText(this, "uploaded", Toast.LENGTH_LONG).show()
             progressDialog.dismiss()
             uploadImageView.invalidate()
-            uploadImageView.setImageBitmap(null)
+            uploadImageView.setImageDrawable(getResources().getDrawable(R.drawable.ic_insert_photo))
 
         }?.addOnProgressListener { taskSnapshot ->
             val progress = 100.0 * taskSnapshot.bytesTransferred / taskSnapshot
                 .totalByteCount
             progressDialog.setMessage("Uploaded " + progress.toInt() + "%")
         }
-
-
-        //url
-//        val urlTask = uploadTask?.continueWithTask(Continuation<UploadTask.TaskSnapshot, Task<Uri>> { task ->
-//            if (!task.isSuccessful) {
-//                task.exception?.let {
-//                    throw it
-//                }
-//            }
-//            return@Continuation imagesRef?.downloadUrl
-//        })?.addOnCompleteListener { task ->
-//            if (task.isSuccessful) {
-//                val downloadUri = task.result
-//                Log.i("download image uri",downloadUri.toString())
-//            } else {
-//                // Handle failures
-//                Log.i("Error","Url Error")
-//
-//            }
-//        }
-
     }
 
     override fun onBackPressed() {
@@ -248,6 +241,7 @@ class UploadActivity : AppCompatActivity() {
         startActivity(a)
 
     }
+
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
 
         val menuInflater = menuInflater

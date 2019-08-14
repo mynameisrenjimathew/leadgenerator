@@ -5,7 +5,6 @@
         android:layout_width="match_parent"
         android:orientation="vertical"
         android:layout_height="match_parent"
-        android:background="#161110"
         android:padding="5dp"
         android:layout_weight="10"
         tools:context=".ui.UploadActivity">
@@ -15,10 +14,11 @@
             android:layout_width="match_parent"
             android:layout_weight="1"
             android:id="@+id/textView2"
-            android:textColor="#E7DFDF"
+            android:textColor="#161313"
             android:textSize="30sp"
             android:gravity="center"
-            android:layout_height="0dp"/>
+            android:layout_height="0dp"
+            android:fontFamily="sans-serif-smallcaps"/>
 
     <Spinner
             android:layout_marginTop="12dp"
@@ -34,24 +34,45 @@
             android:layout_height="0dp"
             android:layout_marginTop="12dp"
             android:background="@drawable/shape"
+            android:singleLine="true"
+            android:nextFocusDown="@+id/placenameEditText"
             android:hint="Enter Bussiness Name"
-            android:layout_weight="1"/>
+            android:layout_weight="1"
+            android:fontFamily="casual"/>
+    <EditText
+
+            android:id="@+id/placenameEditText"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/shape"
+            android:singleLine="true"
+            android:nextFocusDown="@+id/ownerNameEditText"
+            android:hint="Enter Place Name"
+            android:layout_weight="1"
+            android:fontFamily="casual"/>
     <EditText
             android:id="@+id/ownerNameEditText"
             android:layout_width="match_parent"
+            android:nextFocusDown="@+id/ownerPhoneEditText"
             android:layout_marginTop="12dp"
+            android:singleLine="true"
             android:layout_height="0dp"
             android:background="@drawable/shape"
             android:hint="Enter Owner Name"
-            android:layout_weight="1"/>
+            android:layout_weight="1"
+            android:fontFamily="casual"/>
     <EditText
             android:id="@+id/ownerPhoneEditText"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:background="@drawable/shape"
             android:layout_marginTop="12dp"
+            android:singleLine="true"
+            android:inputType="phone"
             android:hint="Enter Phoen Number"
-            android:layout_weight="1"/>
+            android:layout_weight="1"
+            android:fontFamily="casual"/>
 
     <ImageView
                android:id="@+id/uploadImageView"
@@ -69,6 +90,9 @@
             android:background="@drawable/shape"
             android:layout_marginTop="12dp"
             android:text="Upload Datas"
+            android:fontFamily="casual"
+            android:textAllCaps="false"
+            android:textSize="20sp"
             android:layout_weight="1"/>
 
 
