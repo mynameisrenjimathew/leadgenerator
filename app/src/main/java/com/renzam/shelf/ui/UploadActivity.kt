@@ -40,15 +40,12 @@ class UploadActivity : AppCompatActivity() {
 
     lateinit var bitmap: Bitmap
 
-
     var storage = FirebaseStorage.getInstance()
 
     var storageRef = storage.reference
 
     val imageName = UUID.randomUUID().toString() + ".jpg"
     var imagesRef: StorageReference? = storageRef.child("images")
-
-
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -90,18 +87,13 @@ class UploadActivity : AppCompatActivity() {
 
         spinCategory.adapter = adapter
 
-
-
         if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
 
             requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 1)
-
         }
-
-        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
-            requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),1)
+        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 1)
         }
-
 
         val db = FirebaseFirestore.getInstance()
 
@@ -120,7 +112,6 @@ class UploadActivity : AppCompatActivity() {
             val data = baos.toByteArray()
 
 
-
             val child = imagesRef?.child(imageName)
             val uploadTask = child?.putBytes(data)
 
@@ -130,7 +121,8 @@ class UploadActivity : AppCompatActivity() {
                 progressDialog.dismiss()
             }?.addOnSuccessListener {
 
-                child.downloadUrl.addOnSuccessListener { Unit
+                child.downloadUrl.addOnSuccessListener {
+                    Unit
                     Toast.makeText(applicationContext, "Url : " + it.path, Toast.LENGTH_SHORT).show()
                     Log.e("Image Url", "Url : " + it.path)
                     Log.e("Image Url", "Url : " + it.toString())
@@ -189,18 +181,14 @@ class UploadActivity : AppCompatActivity() {
                 progressDialog.setMessage("Uploaded " + progress.toInt() + "%")
             }
 
-
-
         }
-
 
         uploadImageView.setOnClickListener {
 
             Toast.makeText(this, "you Clicked the Image View", Toast.LENGTH_LONG).show()
             getPhoto()
+
         }
-
-
     }
 
     private fun getPhoto() {
