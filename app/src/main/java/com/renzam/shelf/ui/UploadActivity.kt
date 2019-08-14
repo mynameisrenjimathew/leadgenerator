@@ -33,8 +33,6 @@ class UploadActivity : AppCompatActivity() {
     lateinit var ownerPhoenNumberEditText: EditText
     lateinit var catogoreyList: ArrayList<String>
 
-    lateinit var Url: String
-
 
     lateinit var bitmap: Bitmap
 
@@ -128,6 +126,7 @@ class UploadActivity : AppCompatActivity() {
                     bussinesNameEditText.setText("")
                     ownerNameEditText.setText("")
                     ownerPhoenNumberEditText.setText("")
+                    placeNameEdittext.setText("")
                 }
                 .addOnFailureListener { e ->
                     Log.w("Doc Error Occures", "Error adding document", e)
