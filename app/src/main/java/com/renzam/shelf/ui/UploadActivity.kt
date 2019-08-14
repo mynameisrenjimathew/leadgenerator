@@ -2,9 +2,12 @@ package com.renzam.shelf.ui
 
 import android.Manifest
 import android.app.ProgressDialog
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.location.Location
+import android.location.LocationManager
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
@@ -32,6 +35,8 @@ class UploadActivity : AppCompatActivity() {
     lateinit var spinCategory: Spinner
     lateinit var ownerPhoenNumberEditText: EditText
     lateinit var catogoreyList: ArrayList<String>
+    lateinit var locationManager: LocationManager
+    lateinit var location: Location
 
 
     lateinit var bitmap: Bitmap
@@ -43,8 +48,6 @@ class UploadActivity : AppCompatActivity() {
 
     val imageName = UUID.randomUUID().toString() + ".jpg"
     var imagesRef: StorageReference? = storageRef.child("images")
-
-
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -94,6 +97,10 @@ class UploadActivity : AppCompatActivity() {
 
         }
 
+        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 1)
+        }
+
 
         val db = FirebaseFirestore.getInstance()
 
@@ -101,6 +108,13 @@ class UploadActivity : AppCompatActivity() {
 
 
         uploadButton.setOnClickListener {
+
+
+            locationManager = (getSystemService(Context.LOCATION_SERVICE) as LocationManager)
+            location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+            var latitude = location.latitude
+            var longitude = location.longitude
+
 
 
 
@@ -114,7 +128,9 @@ class UploadActivity : AppCompatActivity() {
                 "ownerName" to ownerNameEditText.text.toString(),
                 "ownerPhoneNum" to ownerPhoenNumberEditText.text.toString(),
                 "businessPlace" to placeNameEdittext.text.toString(),
-                "url" to "https://firebasestorage.googleapis.com/v0/b/shelf-a7d22.appspot.com/o/images%2F50c41036-8eaf-458a-910b-223732e19cfa.jpg?alt=media&token=d2d801c2-24a7-463b-8288-d5ea2b7779a0"
+                "url" to "https://firebasestorage.googleapis.com/v0/b/shelf-a7d22.appspot.com/o/images%2F50c41036-8eaf-458a-910b-223732e19cfa.jpg?alt=media&token=d2d801c2-24a7-463b-8288-d5ea2b7779a0",
+                "latitude" to latitude,
+                "longitude" to longitude
             )
 
 
@@ -132,7 +148,6 @@ class UploadActivity : AppCompatActivity() {
                     Log.w("Doc Error Occures", "Error adding document", e)
                     Toast.makeText(this, "Sorry something went Wrong+$e", Toast.LENGTH_SHORT).show()
                 }
-
 
 
         }
@@ -197,7 +212,6 @@ class UploadActivity : AppCompatActivity() {
         val data = baos.toByteArray()
 
 
-
         val child = imagesRef?.child(imageName)
         val uploadTask = child?.putBytes(data)
 
@@ -207,7 +221,8 @@ class UploadActivity : AppCompatActivity() {
             progressDialog.dismiss()
         }?.addOnSuccessListener {
 
-            child.downloadUrl.addOnSuccessListener { Unit
+            child.downloadUrl.addOnSuccessListener {
+                Unit
                 Toast.makeText(applicationContext, "Url : " + it.path, Toast.LENGTH_SHORT).show()
                 Log.e("Image Url", "Url : " + it.path)
                 Log.e("Image Url", "Url : " + it.toString())
