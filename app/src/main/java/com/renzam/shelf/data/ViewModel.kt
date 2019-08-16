@@ -5,10 +5,18 @@ import android.app.ProgressDialog
 import android.net.Uri
 import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import com.google.firebase.storage.FirebaseStorage
 import java.util.*
 
-class ViewModel(application: Application): AndroidViewModel(application) {
+class ViewModel: ViewModel() {
+
+
+
+    var getshopData = MutableLiveData<String>()
+
+
 
 
 //

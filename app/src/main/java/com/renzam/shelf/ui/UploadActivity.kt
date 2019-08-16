@@ -8,6 +8,7 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.location.Location
 import android.location.LocationManager
+import android.net.ConnectivityManager
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
@@ -24,7 +25,6 @@ import java.io.ByteArrayOutputStream
 import java.util.*
 import kotlin.collections.ArrayList
 
-@Suppress("RECEIVER_NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
 class UploadActivity : AppCompatActivity() {
 
     lateinit var bussinesNameEditText: EditText
@@ -52,6 +52,10 @@ class UploadActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_upload)
 
+        if (!Companion.isOnline(this)) {
+            Toast.makeText(this,"Turn On Internet Connection",Toast.LENGTH_LONG).show()
+        }
+        
         catogoreyList = ArrayList()
         catogoreyList.add("select Catogorey")
         catogoreyList.add("department store")
@@ -106,6 +110,7 @@ class UploadActivity : AppCompatActivity() {
             val progressDialog = ProgressDialog(this)
             progressDialog.setTitle("Uploading...")
             progressDialog.show()
+
 
             val baos = ByteArrayOutputStream()
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
@@ -175,6 +180,7 @@ class UploadActivity : AppCompatActivity() {
                 uploadImageView.invalidate()
                 uploadImageView.setImageDrawable(getResources().getDrawable(R.drawable.ic_insert_photo))
 
+
             }?.addOnProgressListener { taskSnapshot ->
                 val progress = 100.0 * taskSnapshot.bytesTransferred / taskSnapshot
                     .totalByteCount
@@ -187,7 +193,6 @@ class UploadActivity : AppCompatActivity() {
 
             Toast.makeText(this, "you Clicked the Image View", Toast.LENGTH_LONG).show()
             getPhoto()
-
         }
     }
 
@@ -243,10 +248,10 @@ class UploadActivity : AppCompatActivity() {
         return true
 
 
+
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-
 
         if (item.itemId == R.id.logout) {
 
@@ -254,14 +259,21 @@ class UploadActivity : AppCompatActivity() {
 
             startActivity(Intent(this, MainActivity::class.java))
 
-
             return true
 
         } else {
             return super.onOptionsItemSelected(item)
         }
+
     }
 
+    companion object {
+        fun isOnline(uploadActivity: UploadActivity): Boolean {
+            val connectivityManager = uploadActivity.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            val networkInfo = connectivityManager.activeNetworkInfo
+            return networkInfo != null && networkInfo.isConnected
+        }
+    }
 
 }
 
