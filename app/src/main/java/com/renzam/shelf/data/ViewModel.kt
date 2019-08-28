@@ -14,6 +14,8 @@ import android.widget.Toast
 import androidx.core.app.ActivityCompat.startActivityForResult
 import androidx.databinding.Bindable
 import androidx.databinding.ObservableField
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -27,10 +29,10 @@ class ViewModel : ViewModel() {
 
 
     @Bindable
-    val bussinessName = ObservableField<String>()
-    val ownerName = ObservableField<String>()
-    val placeName = ObservableField<String>()
-    val ownerPhoneNumber = ObservableField<String>()
+    val bussinessName = MutableLiveData<String>()
+    val ownerName = MutableLiveData<String>()
+    val placeName = MutableLiveData<String>()
+    val ownerPhoneNumber = MutableLiveData<String>()
 
 
     lateinit var catogoreyOfShop: String
@@ -47,7 +49,7 @@ class ViewModel : ViewModel() {
 
         Log.i(
             "items*********** 8**8***",
-            "${bussinessName.get()} ,${ownerName.get()} ,${placeName.get()} ,${ownerPhoneNumber.get()}  ,$catogoreyOfShop  ,$latitude_  ,$longitude_ "
+            "${bussinessName.value} ,${ownerName.value} ,${placeName.value} ,${ownerPhoneNumber.value}  ,$catogoreyOfShop  ,$latitude_  ,$longitude_ "
         )
 
         //Toast.makeText(contextofthisapp, "something", Toast.LENGTH_SHORT).show()
@@ -98,10 +100,10 @@ class ViewModel : ViewModel() {
                 var shop = DataModels(
                     FirebaseAuth.getInstance().currentUser?.uid ?: "",
                     catogoreyOfShop,
-                    bussinessName.get() ?: "",
-                    ownerName.get() ?: "",
-                    ownerPhoneNumber.get() ?: "",
-                    placeName.get() ?: "",
+                    bussinessName.value ?: "",
+                    ownerName.value ?: "",
+                    ownerPhoneNumber.value ?: "",
+                    placeName.value ?: "",
                     urL,
                     latitude_,
                     longitude_
