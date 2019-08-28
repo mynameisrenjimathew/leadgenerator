@@ -1,29 +1,20 @@
 package com.renzam.shelf.data
 
-import android.app.Activity
-import android.app.Activity.RESULT_OK
-import android.app.Application
 import android.app.ProgressDialog
 import android.content.Context
-import android.content.Intent
-import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.provider.MediaStore
 import android.util.Log
 import android.widget.Toast
-import androidx.core.app.ActivityCompat.startActivityForResult
 import androidx.databinding.Bindable
-import androidx.databinding.ObservableField
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
-import com.renzam.shelf.ui.UploadActivity
 import java.io.ByteArrayOutputStream
 import java.util.*
+
 
 class ViewModel : ViewModel() {
 
@@ -46,7 +37,6 @@ class ViewModel : ViewModel() {
 
     fun getDatas() {
 
-
         Log.i(
             "items*********** 8**8***",
             "${bussinessName.value} ,${ownerName.value} ,${placeName.value} ,${ownerPhoneNumber.value}  ,$catogoreyOfShop  ,$latitude_  ,$longitude_ "
@@ -58,74 +48,81 @@ class ViewModel : ViewModel() {
 
         // repository.UploadToDatabase(catogoreyOfShop,bussinessName_,placeName_,ownerName_,phoneNumber_,thisBitmap,latitude_,longitude_)
 
-        var storage = FirebaseStorage.getInstance()
-
-        var storageRef = storage.reference
-
-        val imageName = UUID.randomUUID().toString() + ".jpg"
-        var imagesRef: StorageReference? = storageRef.child("images")
-
-        val db = FirebaseFirestore.getInstance()
+        if (bussinessName.value != null && ownerName.value != null && placeName.value != null && ownerPhoneNumber.value != null) {
 
 
-        val progressDialog = ProgressDialog(contextofthisapp)
-        progressDialog.setTitle("Uploading...")
-        progressDialog.setMessage("Please Wait.. :) ")
-        progressDialog.show()
+            val storage = FirebaseStorage.getInstance()
 
-        val baos = ByteArrayOutputStream()
-        thisBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
-        val data = baos.toByteArray()
+            val storageRef = storage.reference
 
-        val child = imagesRef?.child(imageName)
-        val uploadTask = child?.putBytes(data)
+            val imageName = UUID.randomUUID().toString() + ".jpg"
+            val imagesRef: StorageReference? = storageRef.child("images")
 
-        uploadTask?.addOnFailureListener {
+            val db = FirebaseFirestore.getInstance()
 
-            Toast.makeText(contextofthisapp, "Sorry Uploaded Failed", Toast.LENGTH_SHORT).show()
-            Log.e("Image Upload Error", "Sorry" + it.message)
-            progressDialog.dismiss()
+            val progressDialog = ProgressDialog(contextofthisapp)
+            progressDialog.setTitle("Uploading...")
+            progressDialog.setMessage("Please Wait.. :) ")
+            progressDialog.show()
 
+            val baos = ByteArrayOutputStream()
+            thisBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+            val data = baos.toByteArray()
 
-        }?.addOnSuccessListener {
+            val child = imagesRef?.child(imageName)
+            val uploadTask = child?.putBytes(data)
 
-            Toast.makeText(contextofthisapp, "Upload Image to the database", Toast.LENGTH_SHORT).show()
+            uploadTask?.addOnFailureListener {
 
-            child.downloadUrl.addOnSuccessListener {
+                Toast.makeText(contextofthisapp, "Sorry Uploaded Failed", Toast.LENGTH_SHORT).show()
+                Log.e("Image Upload Error", "Sorry" + it.message)
+                progressDialog.dismiss()
 
+            }?.addOnSuccessListener {
 
-                Toast.makeText(contextofthisapp, "Url  :" + it.toString(), Toast.LENGTH_SHORT).show()
-                urL = it.toString()
-
-                var shop = DataModels(
-                    FirebaseAuth.getInstance().currentUser?.uid ?: "",
-                    catogoreyOfShop,
-                    bussinessName.value ?: "",
-                    ownerName.value ?: "",
-                    ownerPhoneNumber.value ?: "",
-                    placeName.value ?: "",
-                    urL,
-                    latitude_,
-                    longitude_
-                )
+                Toast.makeText(contextofthisapp, "Upload Image to the database", Toast.LENGTH_SHORT).show()
 
 
 
-                db.collection("shops")
-                    .add(shop)
-                    .addOnSuccessListener {
+                child.downloadUrl.addOnSuccessListener {
+                    Toast.makeText(contextofthisapp, " ", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(contextofthisapp, "Url  :$it", Toast.LENGTH_SHORT).show()
+                    urL = it.toString()
 
-                        Toast.makeText(contextofthisapp, "great ", Toast.LENGTH_SHORT).show()
-                        progressDialog.dismiss()
+                    val shop = DataModels(
+                        FirebaseAuth.getInstance().currentUser?.uid ?: "",
+                        catogoreyOfShop,
+                        bussinessName.value ?: "",
+                        ownerName.value ?: "",
+                        ownerPhoneNumber.value ?: "",
+                        placeName.value ?: "",
+                        urL,
+                        latitude_,
+                        longitude_
+                    )
 
-                    }.addOnFailureListener {
-                        Toast.makeText(contextofthisapp, "Sorry ", Toast.LENGTH_SHORT).show()
-                        Log.e("errorrr@@@********", "Sorry  ${it.message}")
-                    }
+                    db.collection("shops")
+                        .add(shop)
+                        .addOnSuccessListener {
+
+                            Toast.makeText(contextofthisapp, "great ", Toast.LENGTH_SHORT).show()
+                            bussinessName.value = ""
+                            ownerName.value = ""
+                            ownerPhoneNumber.value = ""
+                            placeName.value = ""
+                            progressDialog.dismiss()
+
+                        }.addOnFailureListener {
+                            Toast.makeText(contextofthisapp, "Sorry ", Toast.LENGTH_SHORT).show()
+                            Log.e("errorrr@@@********", "Sorry  ${it.message}")
+                        }
+                }
+
             }
 
+        } else {
+            Toast.makeText(contextofthisapp, "Please fill All Fields :)", Toast.LENGTH_SHORT).show()
         }
-
     }
 
     fun getCatagorey(category: String) {
@@ -153,4 +150,7 @@ class ViewModel : ViewModel() {
 
     }
 
+
 }
+
+
