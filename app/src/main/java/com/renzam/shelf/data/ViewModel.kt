@@ -9,6 +9,7 @@ import androidx.databinding.Bindable
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
@@ -25,7 +26,6 @@ class ViewModel : ViewModel() {
     val placeName = MutableLiveData<String>()
     val ownerPhoneNumber = MutableLiveData<String>()
 
-
     lateinit var catogoreyOfShop: String
     lateinit var contextofthisapp: Context
     lateinit var thisBitmap: Bitmap
@@ -34,6 +34,8 @@ class ViewModel : ViewModel() {
     var longitude_: Double = 2.1000
     lateinit var urL: String
 
+    var success = MutableLiveData<String>()
+
 
     fun getDatas() {
 
@@ -41,12 +43,7 @@ class ViewModel : ViewModel() {
             "items*********** 8**8***",
             "${bussinessName.value} ,${ownerName.value} ,${placeName.value} ,${ownerPhoneNumber.value}  ,$catogoreyOfShop  ,$latitude_  ,$longitude_ "
         )
-
-        //Toast.makeText(contextofthisapp, "something", Toast.LENGTH_SHORT).show()
-
-        //repository.UploadToDatabase("","","")
-
-        // repository.UploadToDatabase(catogoreyOfShop,bussinessName_,placeName_,ownerName_,phoneNumber_,thisBitmap,latitude_,longitude_)
+        success.value = ""
 
         if (bussinessName.value != null && ownerName.value != null && placeName.value != null && ownerPhoneNumber.value != null) {
 
@@ -66,7 +63,7 @@ class ViewModel : ViewModel() {
             progressDialog.show()
 
             val baos = ByteArrayOutputStream()
-            thisBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+            thisBitmap.compress(Bitmap.CompressFormat.JPEG, 60, baos)
             val data = baos.toByteArray()
 
             val child = imagesRef?.child(imageName)
@@ -84,6 +81,7 @@ class ViewModel : ViewModel() {
 
 
 
+
                 child.downloadUrl.addOnSuccessListener {
                     Toast.makeText(contextofthisapp, " ", Toast.LENGTH_SHORT).show()
                     Toast.makeText(contextofthisapp, "Url  :$it", Toast.LENGTH_SHORT).show()
@@ -98,14 +96,17 @@ class ViewModel : ViewModel() {
                         placeName.value ?: "",
                         urL,
                         latitude_,
-                        longitude_
+                        longitude_,
+                        FieldValue.serverTimestamp()
                     )
+
 
                     db.collection("shops")
                         .add(shop)
                         .addOnSuccessListener {
 
-                            Toast.makeText(contextofthisapp, "great ", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(contextofthisapp, "great!! Good Job :) ", Toast.LENGTH_SHORT).show()
+                            success.value = "success"
                             bussinessName.value = ""
                             ownerName.value = ""
                             ownerPhoneNumber.value = ""
@@ -152,5 +153,3 @@ class ViewModel : ViewModel() {
 
 
 }
-
-

@@ -38,6 +38,8 @@ class MainActivity : AppCompatActivity() {
                   AuthUI.getInstance()
                       .createSignInIntentBuilder()
                       .setAvailableProviders(providers)
+                      .setTheme(R.style.AppTheme)
+                      .setLogo(R.drawable.loginicon)
                       .build(),
                   RC_SIGN_IN
               )
