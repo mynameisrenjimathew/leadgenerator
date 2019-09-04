@@ -1,7 +1,10 @@
 package com.renzam.shelf.ui
 
 import android.app.Activity
+import android.app.AlertDialog
+import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
 import android.os.Bundle
 import android.widget.Button
 import android.widget.Toast
@@ -23,27 +26,39 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
 
-          if (FirebaseAuth.getInstance().currentUser != null){
+        if (!isInternet(this)){
 
-              goNextfun()
-          }else {
+            AlertDialog.Builder(this)
+                .setTitle("Network Error")
+                .setMessage("Please Check Your Internet Connection")
+                .setPositiveButton("Ok",null)
+                .show()
 
-              val providers = arrayListOf(
-                  AuthUI.IdpConfig.EmailBuilder().build(),
-                  AuthUI.IdpConfig.PhoneBuilder().build(),
-                  AuthUI.IdpConfig.GoogleBuilder().build()
-              )
+        }else {
 
-              startActivityForResult(
-                  AuthUI.getInstance()
-                      .createSignInIntentBuilder()
-                      .setAvailableProviders(providers)
-                      .setTheme(R.style.AppTheme)
-                      .setLogo(R.drawable.loginicon)
-                      .build(),
-                  RC_SIGN_IN
-              )
-          }
+
+            if (FirebaseAuth.getInstance().currentUser != null) {
+
+                goNextfun()
+            } else {
+
+                val providers = arrayListOf(
+                    AuthUI.IdpConfig.EmailBuilder().build(),
+                    AuthUI.IdpConfig.PhoneBuilder().build(),
+                    AuthUI.IdpConfig.GoogleBuilder().build()
+                )
+
+                startActivityForResult(
+                    AuthUI.getInstance()
+                        .createSignInIntentBuilder()
+                        .setAvailableProviders(providers)
+                        .setTheme(R.style.AppTheme)
+                        .setLogo(R.drawable.loginicon)
+                        .build(),
+                    RC_SIGN_IN
+                )
+            }
+        }
 
         }
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -67,6 +82,12 @@ class MainActivity : AppCompatActivity() {
 
     private fun goNextfun() {
         startActivity(Intent(this, UploadActivity::class.java))
+        this.finish()
+    }
+    fun isInternet(activity:AppCompatActivity):Boolean{
+        val connectivityManager=activity.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkInfo=connectivityManager.activeNetworkInfo
+        return  networkInfo!=null && networkInfo.isConnected
     }
 
 

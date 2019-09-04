@@ -1,6 +1,6 @@
 package com.renzam.shelf.data
 
-import com.google.firebase.firestore.FieldValue
+import com.google.firebase.Timestamp
 
 data class DataModels(
     var userId: String,
@@ -12,5 +12,5 @@ data class DataModels(
     var url: String,
     var latitude: Double,
     var longitude: Double,
-    var Date: FieldValue
+    var Date: Timestamp
 )

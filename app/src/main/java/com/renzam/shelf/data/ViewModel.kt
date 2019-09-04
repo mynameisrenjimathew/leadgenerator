@@ -1,5 +1,6 @@
 package com.renzam.shelf.data
 
+import android.annotation.SuppressLint
 import android.app.ProgressDialog
 import android.content.Context
 import android.graphics.Bitmap
@@ -8,13 +9,14 @@ import android.widget.Toast
 import androidx.databinding.Bindable
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import java.io.ByteArrayOutputStream
 import java.util.*
+import java.util.regex.Pattern
 
 
 class ViewModel : ViewModel() {
@@ -30,22 +32,59 @@ class ViewModel : ViewModel() {
     lateinit var contextofthisapp: Context
     lateinit var thisBitmap: Bitmap
 
+
+
+
+
+
     var latitude_: Double = 2.1000
     var longitude_: Double = 2.1000
     lateinit var urL: String
 
     var success = MutableLiveData<String>()
 
-
     fun getDatas() {
 
-        Log.i(
-            "items*********** 8**8***",
-            "${bussinessName.value} ,${ownerName.value} ,${placeName.value} ,${ownerPhoneNumber.value}  ,$catogoreyOfShop  ,$latitude_  ,$longitude_ "
-        )
+
+        if (catogoreyOfShop != "select Category") {
+            if (bussinessName.value != null) {
+                if (placeName.value != null) {
+                    if (ownerName.value != null) {
+                        if (ownerPhoneNumber.value != null && isValidMobile(ownerPhoneNumber.value.toString())) {
+                            UploadDataToServer()
+                        } else {
+                            Toast.makeText(
+                                contextofthisapp,
+                                "Enter Owner Phone Number Or Check the Number",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    } else {
+                        Toast.makeText(contextofthisapp, "Please Enter Owner Name", Toast.LENGTH_SHORT).show()
+                    }
+                } else {
+                    Toast.makeText(contextofthisapp, "Please Enter Place Name", Toast.LENGTH_SHORT).show()
+                }
+            } else {
+                Toast.makeText(contextofthisapp, "Please Enter Bussiness Name", Toast.LENGTH_SHORT).show()
+            }
+        }else{
+            Toast.makeText(contextofthisapp,"Please Select Category",Toast.LENGTH_SHORT).show()
+
+        }
+
+    }
+
+    @SuppressLint("LongLogTag")
+    fun UploadDataToServer(){
+
+//        Log.i(
+//            "items*********** 8**8***",
+//            "${bussinessName.value} ,${ownerName.value} ,${placeName.value} ,${ownerPhoneNumber.value}  ,$catogoreyOfShop  ,$latitude_  ,$longitude_ "
+//        )
         success.value = ""
 
-        if (bussinessName.value != null && ownerName.value != null && placeName.value != null && ownerPhoneNumber.value != null) {
+//        if (bussinessName.value != "" && ownerName.value != "" && placeName.value != "" && ownerPhoneNumber.value != "") {
 
 
             val storage = FirebaseStorage.getInstance()
@@ -77,14 +116,12 @@ class ViewModel : ViewModel() {
 
             }?.addOnSuccessListener {
 
-                Toast.makeText(contextofthisapp, "Upload Image to the database", Toast.LENGTH_SHORT).show()
-
-
-
+                //Toast.makeText(contextofthisapp, "Upload Image to the database", Toast.LENGTH_SHORT).show()
 
                 child.downloadUrl.addOnSuccessListener {
-                    Toast.makeText(contextofthisapp, " ", Toast.LENGTH_SHORT).show()
-                    Toast.makeText(contextofthisapp, "Url  :$it", Toast.LENGTH_SHORT).show()
+
+                   // Toast.makeText(contextofthisapp, "Url  :$it", Toast.LENGTH_SHORT).show()
+
                     urL = it.toString()
 
                     val shop = DataModels(
@@ -97,7 +134,7 @@ class ViewModel : ViewModel() {
                         urL,
                         latitude_,
                         longitude_,
-                        FieldValue.serverTimestamp()
+                        Timestamp.now()
                     )
 
 
@@ -107,11 +144,12 @@ class ViewModel : ViewModel() {
 
                             Toast.makeText(contextofthisapp, "great!! Good Job :) ", Toast.LENGTH_SHORT).show()
                             success.value = "success"
-                            bussinessName.value = ""
-                            ownerName.value = ""
-                            ownerPhoneNumber.value = ""
-                            placeName.value = ""
+                            bussinessName.value = null
+                            ownerName.value = null
+                            ownerPhoneNumber.value = null
+                            placeName.value = null
                             progressDialog.dismiss()
+
 
                         }.addOnFailureListener {
                             Toast.makeText(contextofthisapp, "Sorry ", Toast.LENGTH_SHORT).show()
@@ -120,10 +158,10 @@ class ViewModel : ViewModel() {
                 }
 
             }
+//        }else {
+//            Toast.makeText(contextofthisapp, "Please fill All Fields :)", Toast.LENGTH_SHORT).show()
+//        }
 
-        } else {
-            Toast.makeText(contextofthisapp, "Please fill All Fields :)", Toast.LENGTH_SHORT).show()
-        }
     }
 
     fun getCatagorey(category: String) {
@@ -149,6 +187,11 @@ class ViewModel : ViewModel() {
         latitude_ = latitude
         longitude_ = longitude
 
+    }
+    private fun isValidMobile(phone: String): Boolean {
+        return if (!Pattern.matches("[a-zA-Z]+", phone)) {
+            phone.length in 7..13
+        } else false
     }
 
 

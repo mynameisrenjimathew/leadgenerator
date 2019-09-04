@@ -2,6 +2,7 @@ package com.renzam.shelf.ui
 
 import android.Manifest
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -12,13 +13,16 @@ import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.net.ConnectivityManager
+import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.provider.Settings
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.*
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
@@ -27,8 +31,12 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.firebase.ui.auth.AuthUI
 import com.google.common.base.MoreObjects
+import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.FirebaseFirestore
 import com.renzam.shelf.R
+import com.renzam.shelf.data.Utils
 
 import com.renzam.shelf.data.ViewModel
 import com.renzam.shelf.databinding.ActivityUploadBinding
@@ -42,10 +50,11 @@ class UploadActivity : AppCompatActivity() {
     lateinit var locationManager: LocationManager
     lateinit var bitmap: Bitmap
     lateinit var viemodelDummy: ViewModel
-    lateinit var myBitmap: Bitmap
+//    lateinit var myBitmap: Bitmap
     lateinit var locationListner: LocationListener
 
 
+    @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_upload)
@@ -60,12 +69,16 @@ class UploadActivity : AppCompatActivity() {
             this.viewmodel = viewModelCls
         }
 
+
+
+
+
         viewModelCls.Goodnews(this@UploadActivity)
 
         viemodelDummy = viewModelCls
 
         catogoreyList = ArrayList()
-        catogoreyList.add("select Catogorey")
+        catogoreyList.add("select Category")
         catogoreyList.add("department store")
         catogoreyList.add("supermarket")
         catogoreyList.add("grocer")
@@ -81,10 +94,11 @@ class UploadActivity : AppCompatActivity() {
         catogoreyList.add("Other")
 
 
+
         locationManager = (getSystemService(Context.LOCATION_SERVICE) as LocationManager)
 
-        myBitmap = BitmapFactory.decodeResource(resources, R.drawable.noimage)
-        uploadImageView.setImageBitmap(myBitmap)
+//        myBitmap = BitmapFactory.decodeResource(resources, R.drawable.noimage)
+//        uploadImageView.setImageBitmap(myBitmap)
 
         uploadImageView.invalidate()
         var bitmapDrawable: BitmapDrawable = uploadImageView.drawable as BitmapDrawable
@@ -92,10 +106,9 @@ class UploadActivity : AppCompatActivity() {
         viemodelDummy.getBitmap(bimapImagV)
 
 
+
         uploadImageView.setOnClickListener {
 
-            uploadImageView.invalidate()
-            uploadImageView.setImageBitmap(null)
 
             getPhoto()
 
@@ -105,8 +118,8 @@ class UploadActivity : AppCompatActivity() {
             if (it == "success") {
 
                 uploadImageView.invalidate()
-                uploadImageView.setImageBitmap(null)
-                uploadImageView.setImageBitmap(myBitmap)
+                uploadImageView.setImageResource(R.drawable.noimage)
+                spinCategory.setSelection(0)
 
             }
         })
@@ -121,15 +134,16 @@ class UploadActivity : AppCompatActivity() {
 
         spinCategory.adapter = adapter
 
-        if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0L, 0f, locationListner)
-
-        }else{
-//            requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 1)
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 1)
-        }
 
 
+
+//        if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+//            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0L, 0f, locationListner)
+//
+//        }else{
+////            requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 1)
+//            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 1)
+//        }
 
         spinCategory.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
@@ -142,11 +156,6 @@ class UploadActivity : AppCompatActivity() {
                 }else{
                     ActivityCompat.requestPermissions(this@UploadActivity, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 1)
                 }
-
-
-
-               // viemodelDummy.getLocation(latitudeOn, longitudeOn)
-
 
             }
 
@@ -165,6 +174,11 @@ class UploadActivity : AppCompatActivity() {
             override fun onStatusChanged(provider: String, status: Int, extras: Bundle) {}
             override fun onProviderEnabled(provider: String) {}
             override fun onProviderDisabled(provider: String) {}
+        }
+
+        if (!isLocationEnabled(this)){
+
+            Toast.makeText(this,"Please Check Gps",Toast.LENGTH_SHORT).show()
         }
 
     }
@@ -212,6 +226,7 @@ class UploadActivity : AppCompatActivity() {
     private fun getPhoto() {
         val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
         startActivityForResult(intent, 1)
+
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
@@ -242,6 +257,25 @@ class UploadActivity : AppCompatActivity() {
         }
 
     }
+
+    fun isLocationEnabled(context: Context): Boolean {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            // This is new method provided in API 28
+            val lm = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+            return lm.isLocationEnabled
+        } else {
+            // This is Deprecated in API 28
+            val mode = Settings.Secure.getInt(
+                context.contentResolver, Settings.Secure.LOCATION_MODE,
+                Settings.Secure.LOCATION_MODE_OFF
+            )
+            return mode != Settings.Secure.LOCATION_MODE_OFF
+
+        }
+
+    }
+
+
 
 
 }
