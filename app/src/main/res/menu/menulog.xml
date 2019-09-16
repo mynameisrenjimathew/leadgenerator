@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:title="LogOut"
           android:id="@+id/logout"/>
-    <item android:title="deleteAccount"
+    <item android:title="Delete Account"
           android:id="@+id/delete_Account"/>
     <item android:title="My Uploads"
           android:id="@+id/myUploads"/>

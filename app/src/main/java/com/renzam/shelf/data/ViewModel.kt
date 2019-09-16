@@ -23,10 +23,10 @@ class ViewModel : ViewModel() {
 
 
     @Bindable
-    val bussinessName = MutableLiveData<String>()
-    val ownerName = MutableLiveData<String>()
-    val placeName = MutableLiveData<String>()
-    val ownerPhoneNumber = MutableLiveData<String>()
+    var bussinessName: String = ""
+    var ownerName: String = ""
+    var placeName: String = ""
+    var ownerPhoneNumber: String = ""
 
     lateinit var catogoreyOfShop: String
     lateinit var contextofthisapp: Context
@@ -35,57 +35,54 @@ class ViewModel : ViewModel() {
 
 
 
-
-
-    var latitude_: Double = 2.1000
-    var longitude_: Double = 2.1000
+    var latitude_: Double =-34.0
+    var longitude_: Double =151.0
     lateinit var urL: String
 
     var success = MutableLiveData<String>()
 
+    @SuppressLint("LongLogTag")
     fun getDatas() {
 
 
-        if (catogoreyOfShop != "select Category") {
-            if (bussinessName.value != null) {
-                if (placeName.value != null) {
-                    if (ownerName.value != null) {
-                        if (ownerPhoneNumber.value != null && isValidMobile(ownerPhoneNumber.value.toString())) {
-                            UploadDataToServer()
-                        } else {
-                            Toast.makeText(
-                                contextofthisapp,
-                                "Enter Owner Phone Number Or Check the Number",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-                    } else {
-                        Toast.makeText(contextofthisapp, "Please Enter Owner Name", Toast.LENGTH_SHORT).show()
-                    }
-                } else {
-                    Toast.makeText(contextofthisapp, "Please Enter Place Name", Toast.LENGTH_SHORT).show()
-                }
-            } else {
-                Toast.makeText(contextofthisapp, "Please Enter Bussiness Name", Toast.LENGTH_SHORT).show()
-            }
-        }else{
-            Toast.makeText(contextofthisapp,"Please Select Category",Toast.LENGTH_SHORT).show()
+        if (catogoreyOfShop == "select Category") {
 
+            Toast.makeText(contextofthisapp, "Please Select Catagory", Toast.LENGTH_SHORT).show()
+
+        }else if (bussinessName.trim() == "") {
+
+            Toast.makeText(contextofthisapp, "Please Enter Business Name", Toast.LENGTH_SHORT).show()
+
+        }else if (placeName.trim() == "") {
+            Toast.makeText(contextofthisapp, "Please Enter Place Name", Toast.LENGTH_SHORT).show()
+
+
+        }else if (ownerName.trim()== "") {
+            Toast.makeText(contextofthisapp, "Please Enter Owner Name", Toast.LENGTH_SHORT).show()
+
+        }else if (ownerPhoneNumber.trim() == ""){
+            Toast.makeText(contextofthisapp, "Please Enter Phone Number", Toast.LENGTH_SHORT).show()
+
+        }else if (!isValidMobile(ownerPhoneNumber)){
+
+            Toast.makeText(contextofthisapp, "Please Enter Valid Phone Number", Toast.LENGTH_SHORT).show()
+        }else{
+
+
+            Log.i("Datass ***********","$bussinessName  $placeName   $ownerName  $ownerPhoneNumber")
+
+
+            UploadDataToServer()
         }
+
+
 
     }
 
     @SuppressLint("LongLogTag")
     fun UploadDataToServer(){
 
-//        Log.i(
-//            "items*********** 8**8***",
-//            "${bussinessName.value} ,${ownerName.value} ,${placeName.value} ,${ownerPhoneNumber.value}  ,$catogoreyOfShop  ,$latitude_  ,$longitude_ "
-//        )
         success.value = ""
-
-//        if (bussinessName.value != "" && ownerName.value != "" && placeName.value != "" && ownerPhoneNumber.value != "") {
-
 
             val storage = FirebaseStorage.getInstance()
 
@@ -116,7 +113,6 @@ class ViewModel : ViewModel() {
 
             }?.addOnSuccessListener {
 
-                //Toast.makeText(contextofthisapp, "Upload Image to the database", Toast.LENGTH_SHORT).show()
 
                 child.downloadUrl.addOnSuccessListener {
 
@@ -127,10 +123,10 @@ class ViewModel : ViewModel() {
                     val shop = DataModels(
                         FirebaseAuth.getInstance().currentUser?.uid ?: "",
                         catogoreyOfShop,
-                        bussinessName.value ?: "",
-                        ownerName.value ?: "",
-                        ownerPhoneNumber.value ?: "",
-                        placeName.value ?: "",
+                        bussinessName,
+                        ownerName,
+                        ownerPhoneNumber,
+                        placeName,
                         urL,
                         latitude_,
                         longitude_,
@@ -144,10 +140,10 @@ class ViewModel : ViewModel() {
 
                             Toast.makeText(contextofthisapp, "great!! Good Job :) ", Toast.LENGTH_SHORT).show()
                             success.value = "success"
-                            bussinessName.value = null
-                            ownerName.value = null
-                            ownerPhoneNumber.value = null
-                            placeName.value = null
+                            bussinessName = ""
+                            ownerName = ""
+                            ownerPhoneNumber = ""
+                            placeName = ""
                             progressDialog.dismiss()
 
 
@@ -158,9 +154,6 @@ class ViewModel : ViewModel() {
                 }
 
             }
-//        }else {
-//            Toast.makeText(contextofthisapp, "Please fill All Fields :)", Toast.LENGTH_SHORT).show()
-//        }
 
     }
 

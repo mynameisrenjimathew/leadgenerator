@@ -1,23 +1,18 @@
 package com.renzam.shelf.ui
 
 import android.Manifest
-import android.app.Activity
-import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
-import android.net.ConnectivityManager
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.provider.Settings
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -26,20 +21,14 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import com.firebase.ui.auth.AuthUI
-import com.google.common.base.MoreObjects
-import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FieldValue
-import com.google.firebase.firestore.FirebaseFirestore
 import com.renzam.shelf.R
-import com.renzam.shelf.data.Utils
 
 import com.renzam.shelf.data.ViewModel
 import com.renzam.shelf.databinding.ActivityUploadBinding
+import kotlinx.android.synthetic.main.activity_upload.*
 import kotlin.collections.ArrayList
 
 class UploadActivity : AppCompatActivity() {
@@ -50,7 +39,6 @@ class UploadActivity : AppCompatActivity() {
     lateinit var locationManager: LocationManager
     lateinit var bitmap: Bitmap
     lateinit var viemodelDummy: ViewModel
-//    lateinit var myBitmap: Bitmap
     lateinit var locationListner: LocationListener
 
 
@@ -70,35 +58,33 @@ class UploadActivity : AppCompatActivity() {
         }
 
 
-
-
-
         viewModelCls.Goodnews(this@UploadActivity)
 
         viemodelDummy = viewModelCls
 
         catogoreyList = ArrayList()
-        catogoreyList.add("select Category")
-        catogoreyList.add("department store")
-        catogoreyList.add("supermarket")
-        catogoreyList.add("grocer")
+        catogoreyList.add("Select Category")
+        catogoreyList.add("Department store")
+        catogoreyList.add("Supermarket")
+        catogoreyList.add("Grocer")
         spinCategory = findViewById(R.id.spinner)
         uploadImageView = findViewById(R.id.uploadImageView)
-        catogoreyList.add("greengrocer")
-        catogoreyList.add("bookShop")
-        catogoreyList.add("stationary")
-        catogoreyList.add("clothes shop")
-        catogoreyList.add("optican")
-        catogoreyList.add("petshop")
+        catogoreyList.add("Greengrocer")
+        catogoreyList.add("BookShop")
+        catogoreyList.add("Stationary")
+        catogoreyList.add("Clothes shop")
+        catogoreyList.add("Optican")
+        catogoreyList.add("Petshop")
         catogoreyList.add("Hotel")
         catogoreyList.add("Other")
-
 
 
         locationManager = (getSystemService(Context.LOCATION_SERVICE) as LocationManager)
 
 //        myBitmap = BitmapFactory.decodeResource(resources, R.drawable.noimage)
 //        uploadImageView.setImageBitmap(myBitmap)
+
+
 
         uploadImageView.invalidate()
         var bitmapDrawable: BitmapDrawable = uploadImageView.drawable as BitmapDrawable
@@ -109,9 +95,7 @@ class UploadActivity : AppCompatActivity() {
 
         uploadImageView.setOnClickListener {
 
-
             getPhoto()
-
         }
         viewModelCls.success.observe(this, Observer {
 
@@ -120,6 +104,14 @@ class UploadActivity : AppCompatActivity() {
                 uploadImageView.invalidate()
                 uploadImageView.setImageResource(R.drawable.noimage)
                 spinCategory.setSelection(0)
+
+                bussinessnameEditText.setText("")
+                placenameEditText.setText("")
+                ownerNameEditText.setText("")
+                ownerPhoneEditText.setText("")
+
+
+
 
             }
         })
@@ -133,9 +125,6 @@ class UploadActivity : AppCompatActivity() {
         adapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
 
         spinCategory.adapter = adapter
-
-
-
 
 //        if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
 //            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0L, 0f, locationListner)
@@ -159,13 +148,12 @@ class UploadActivity : AppCompatActivity() {
 
             }
 
-            override fun onNothingSelected(parent: AdapterView<*>) {
-
-            }
+            override fun onNothingSelected(parent: AdapterView<*>) {}
         }
 
         locationListner = object : LocationListener {
             override fun onLocationChanged(location: Location) {
+
 
                 viemodelDummy.getLocation(location.latitude,location.longitude)
 
@@ -178,7 +166,8 @@ class UploadActivity : AppCompatActivity() {
 
         if (!isLocationEnabled(this)){
 
-            Toast.makeText(this,"Please Check Gps",Toast.LENGTH_SHORT).show()
+            Toast.makeText(this,"Please Check Gps Connection",Toast.LENGTH_SHORT).show()
+
         }
 
     }
@@ -274,8 +263,6 @@ class UploadActivity : AppCompatActivity() {
         }
 
     }
-
-
 
 
 }

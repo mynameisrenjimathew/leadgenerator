@@ -1,113 +1,117 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools">
     <data>
         <variable
-                  name="viewmodel"
-                  type="com.renzam.shelf.data.ViewModel"/>
+                name="viewmodel"
+                type="com.renzam.shelf.data.ViewModel"/>
 
     </data>
 
+
     <LinearLayout
             android:layout_width="match_parent"
-            android:orientation="vertical"
             android:layout_height="match_parent"
-            android:padding="5dp"
-            android:layout_weight="10"
-            tools:context=".ui.UploadActivity">
+            android:weightSum="4"
+            android:orientation="vertical">
+        <ScrollView
+                android:id="@+id/scrollView"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:padding="5dp"
+                android:layout_weight="4"
+                tools:context=".ui.UploadActivity">
 
-        <TextView
-                android:text="Data Uploading"
-                android:layout_width="match_parent"
-                android:layout_weight="1"
-                android:id="@+id/textView2"
-                android:textColor="#161313"
-                android:textSize="30sp"
-                android:gravity="center"
-                android:layout_height="0dp"
-                android:fontFamily="sans-serif-smallcaps"/>
+            <LinearLayout
+                    android:layout_width="match_parent"
+                    android:orientation="vertical"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp"
+                    tools:context=".ui.UploadActivity">
 
-        <Spinner
-                android:layout_marginTop="12dp"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:id="@+id/spinner"
-                android:background="@drawable/shape"
-                android:layout_weight="1"/>
-        <EditText
+                <ImageView
+                        android:id="@+id/uploadImageView"
+                        android:layout_width="match_parent"
+                        android:layout_height="250dp"
+                        android:src="@drawable/noimage"
+                        android:layout_marginTop="35dp"
+                        android:background="@drawable/shape"/>
+                <Spinner
+                        android:layout_marginTop="8dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:id="@+id/spinner"/>
 
-                android:id="@+id/bussinessnameEditText"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_marginTop="12dp"
-                android:background="@drawable/shape"
-                android:singleLine="true"
-                android:text="@={viewmodel.bussinessName}"
-                android:nextFocusDown="@+id/placenameEditText"
-                android:hint="Enter Bussiness Name"
-                android:layout_weight="1"
-                android:fontFamily="casual"/>
-        <EditText
+                <EditText
+                        android:id="@+id/bussinessnameEditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:singleLine="true"
+                        android:text="@={viewmodel.bussinessName}"
+                        android:nextFocusDown="@+id/placenameEditText"
+                        android:backgroundTint="#11161A"
+                        android:hint="Enter Bussiness Name"
+                        android:fontFamily="casual">
 
-                android:id="@+id/placenameEditText"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_marginTop="12dp"
-                android:background="@drawable/shape"
-                android:singleLine="true"
-                android:text="@={viewmodel.placeName}"
-                android:nextFocusDown="@+id/ownerNameEditText"
-                android:hint="Enter Place Name"
-                android:layout_weight="1"
-                android:fontFamily="casual"/>
-        <EditText
-                android:id="@+id/ownerNameEditText"
-                android:layout_width="match_parent"
-                android:nextFocusDown="@+id/ownerPhoneEditText"
-                android:layout_marginTop="12dp"
-                android:singleLine="true"
-                android:layout_height="0dp"
-                android:background="@drawable/shape"
-                android:text="@={viewmodel.ownerName}"
-                android:hint="Enter Owner Name"
-                android:layout_weight="1"
-                android:fontFamily="casual"/>
-        <EditText
-                android:id="@+id/ownerPhoneEditText"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:text="@={viewmodel.ownerPhoneNumber}"
-                android:background="@drawable/shape"
-                android:layout_marginTop="12dp"
-                android:singleLine="true"
-                android:inputType="phone"
-                android:maxLength="10"
-                android:hint="Enter Phone Number"
-                android:layout_weight="1"
-                android:fontFamily="casual"/>
+                </EditText>
+                <EditText
 
-        <ImageView
-                android:id="@+id/uploadImageView"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:src="@drawable/noimage"
-                android:layout_marginTop="12dp"
-                android:background="@drawable/shape"
-                android:layout_weight="3"/>
+                        android:id="@+id/placenameEditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:backgroundTint="#11161A"
+                        android:singleLine="true"
+                        android:text="@={viewmodel.placeName}"
+                        android:nextFocusDown="@+id/ownerNameEditText"
+                        android:hint="Enter Place Name"
+                        android:fontFamily="casual"/>
+                <EditText
+                        android:id="@+id/ownerNameEditText"
+                        android:layout_width="match_parent"
+                        android:nextFocusDown="@+id/ownerPhoneEditText"
+                        android:layout_marginTop="10dp"
+                        android:singleLine="true"
+                        android:layout_height="wrap_content"
+                        android:backgroundTint="#11161A"
+                        android:text="@={viewmodel.ownerName}"
+                        android:hint="Enter Owner Name"
+                        android:fontFamily="casual"/>
+                <EditText
+                        android:id="@+id/ownerPhoneEditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@={viewmodel.ownerPhoneNumber}"
+                        android:layout_marginTop="10dp"
+                        android:singleLine="true"
+                        android:backgroundTint="#11161A"
+                        android:inputType="phone"
+                        android:maxLength="10"
+                        android:hint="Enter Phone Number"
+                        android:fontFamily="casual"/>
+                <Button
+                        android:layout_above="@+id/scrollView"
+                        android:id="@+id/uploadButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="bottom|center"
+                        android:layout_marginTop="25dp"
+                        android:onClick="@{() -> viewmodel.getDatas()}"
+                        android:text="Upload Datas"
+                        android:background="@drawable/shape"
+                        android:fontFamily="casual"
+                        android:textAllCaps="false"
+                        android:gravity="center_horizontal"
+                        android:textSize="20sp"/>
 
 
-        <Button
-                android:id="@+id/uploadButton"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:background="@drawable/shape"
-                android:layout_marginTop="12dp"
-                android:onClick="@{() -> viewmodel.getDatas()}"
-                android:text="Upload Datas"
-                android:fontFamily="casual"
-                android:textAllCaps="false"
-                android:textSize="20sp"
-                android:layout_weight="1"/>
+
+            </LinearLayout>
+
+        </ScrollView>
 
 
     </LinearLayout>
+
 </layout>
