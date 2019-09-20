@@ -12,6 +12,7 @@
     <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:id="@+id/myLayoutUploading"
             android:weightSum="4"
             android:orientation="vertical">
         <ScrollView
@@ -43,6 +44,12 @@
                         android:layout_height="50dp"
                         android:id="@+id/spinner"/>
 
+                <ProgressBar
+                        style="?android:attr/progressBarStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/progressBar"
+                        android:visibility="gone"/>
                 <EditText
                         android:id="@+id/bussinessnameEditText"
                         android:layout_width="match_parent"
@@ -51,7 +58,7 @@
                         android:text="@={viewmodel.bussinessName}"
                         android:nextFocusDown="@+id/placenameEditText"
                         android:backgroundTint="#11161A"
-                        android:hint="Enter Bussiness Name"
+                        android:hint="Enter Business Name"
                         android:fontFamily="casual">
 
                 </EditText>
@@ -98,9 +105,9 @@
                         android:layout_gravity="bottom|center"
                         android:layout_marginTop="25dp"
                         android:onClick="@{() -> viewmodel.getDatas()}"
-                        android:text="Upload Datas"
+                        android:text="Submit"
                         android:background="@drawable/shape"
-                        android:fontFamily="casual"
+                        android:fontFamily="sans-serif-medium"
                         android:textAllCaps="false"
                         android:gravity="center_horizontal"
                         android:textSize="20sp"/>

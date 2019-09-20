@@ -8,9 +8,14 @@ import android.util.Log
 import android.view.WindowManager
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
+import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.ViewModelProviders
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.renzam.shelf.R
+import com.renzam.shelf.data.DmviewModel
+import com.renzam.shelf.data.ViewModel
+import com.renzam.shelf.databinding.ActivityUploadBinding
 import com.squareup.picasso.Picasso
 
 class DocumentManager : AppCompatActivity() {
@@ -25,9 +30,8 @@ class DocumentManager : AppCompatActivity() {
 
     lateinit var deleteBtn: Button
     lateinit var edtBtn: Button
-    lateinit var mapBtn: Button
     var lat: Double = 12.1
-    var  long: Double = 12.1
+    var long: Double = 12.1
     lateinit var shopIn: String
     lateinit var spinner: Spinner
 
@@ -44,18 +48,18 @@ class DocumentManager : AppCompatActivity() {
 
         spinner = findViewById(R.id.catpgoryEt)
 
-
         catogoreyList = ArrayList()
-        catogoreyList.add("select Category")
-        catogoreyList.add("department store")
-        catogoreyList.add("supermarket")
-        catogoreyList.add("grocer")
-        catogoreyList.add("greengrocer")
-        catogoreyList.add("bookShop")
-        catogoreyList.add("stationary")
-        catogoreyList.add("clothes shop")
-        catogoreyList.add("optican")
-        catogoreyList.add("petshop")
+
+        catogoreyList.add("Select Category")
+        catogoreyList.add("Department store")
+        catogoreyList.add("Supermarket")
+        catogoreyList.add("Grocer")
+        catogoreyList.add("Greengrocer")
+        catogoreyList.add("BookShop")
+        catogoreyList.add("Stationary")
+        catogoreyList.add("Clothes shop")
+        catogoreyList.add("Optican")
+        catogoreyList.add("Petshop")
         catogoreyList.add("Hotel")
         catogoreyList.add("Other")
 
@@ -69,11 +73,9 @@ class DocumentManager : AppCompatActivity() {
         spinner.adapter = adapter
 
 
-        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
-
         deleteBtn = findViewById(R.id.deleteBtn)
         edtBtn = findViewById(R.id.editFieldBtn)
-        mapBtn = findViewById(R.id.showMapBtn)
+
 
         val progressDialogStart = ProgressDialog(this)
         progressDialogStart.setTitle("Fetchng Datas...")
@@ -101,6 +103,7 @@ class DocumentManager : AppCompatActivity() {
                 placeNameEt.setText(result["businessPlace"].toString())
                 phoneNumber.setText(result["ownerPhoneNum"].toString())
 
+
                 lat = result["latitude"] as Double
                 long = result["longitude"] as Double
 
@@ -111,29 +114,43 @@ class DocumentManager : AppCompatActivity() {
                     .placeholder(R.drawable.noimage)
                     .into(imageView)
                 progressDialogStart.dismiss()
-
             }
         }
 
         deleteBtn.setOnClickListener {
 
-            val progressDialogDelete = ProgressDialog(this)
-            progressDialogDelete.setTitle("Uploading...")
-            progressDialogDelete.setMessage("Please Wait.. :) ")
-            progressDialogDelete.show()
+            AlertDialog.Builder(this)
+                .setTitle("Do You Want To Delete This")
+                .setMessage("It Can Delete Your Uploaded Data Compleately... ")
+                .setPositiveButton("Yes") { dialog, which ->
 
-            db.collection("shops").document(docId)
-                .delete()
-                .addOnSuccessListener {
-                    Toast.makeText(this, "Successfully Deleted", Toast.LENGTH_SHORT).show()
-                    startActivity(Intent(this, MyUploadActivity::class.java))
-                    progressDialogDelete.dismiss()
-                }.addOnFailureListener {
+                    val progressDialogDelete = ProgressDialog(this)
+                    progressDialogDelete.setTitle("Uploading...")
+                    progressDialogDelete.setMessage("Please Wait.. :) ")
+                    progressDialogDelete.show()
 
-                    Toast.makeText(this, "Something Went Wrong Please Try Again Later", Toast.LENGTH_SHORT).show()
-                    Log.e("Error Deletionn ******", it.message)
-                    progressDialogDelete.dismiss()
+                    db.collection("shops").document(docId)
+                        .delete()
+                        .addOnSuccessListener {
+                            Toast.makeText(this, "Successfully Deleted", Toast.LENGTH_SHORT).show()
+                            startActivity(Intent(this, MyUploadActivity::class.java))
+                            progressDialogDelete.dismiss()
+                        }.addOnFailureListener {
+
+                            Toast.makeText(this, "Something Went Wrong Please Try Again Later", Toast.LENGTH_SHORT)
+                                .show()
+                            Log.e("Error Deletionn ******", it.message)
+                            progressDialogDelete.dismiss()
+                        }
+
+
+                }.setNeutralButton("No") { dialog, which ->
+
+                    dialog.dismiss()
+
                 }
+                .create()
+                .show()
 
         }
         edtBtn.setOnClickListener {
@@ -153,16 +170,15 @@ class DocumentManager : AppCompatActivity() {
                     docRefUdp.update("shopCatogorey", spinner.selectedItem.toString())
                     docRefUdp.update("businessName", businessNameEt.text.toString())
                     docRefUdp.update("ownerName", ownerNameEt.text.toString())
-                    docRef.update("businessPlace", placeNameEt.text.toString())
-                    docRef.update("ownerPhoneNum", phoneNumber.text.toString())
+                    docRefUdp.update("businessPlace", placeNameEt.text.toString())
+                    docRefUdp.update("ownerPhoneNum", phoneNumber.text.toString())
                         .addOnSuccessListener {
                             Toast.makeText(this, "Successfully Updated", Toast.LENGTH_SHORT).show()
                             progressDialog.dismiss()
-                            startActivity(Intent(this, UploadActivity::class.java))
+                            startActivity(Intent(this, MyUploadActivity::class.java))
                         }.addOnFailureListener {
                             Toast.makeText(this, "Sorry Cannot Update Please Try Agin Later", Toast.LENGTH_SHORT).show()
                         }
-
 
                 }
                 .setNeutralButton("No") { dialog, which ->
@@ -172,15 +188,6 @@ class DocumentManager : AppCompatActivity() {
                 .create()
                 .show()
 
-
-        }
-        mapBtn.setOnClickListener {
-
-            val intent = Intent(this, MapsActivity::class.java)
-            intent.putExtra("lat", lat)
-            intent.putExtra("long",long)
-            intent.putExtra("busnessName",shopIn)
-            startActivity(intent)
         }
 
         imageView.setOnClickListener {

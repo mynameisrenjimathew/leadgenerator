@@ -23,15 +23,15 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        if (!isInternet(this)){
+        if (!isInternet(this)) {
 
             AlertDialog.Builder(this)
                 .setTitle("Network Error")
                 .setMessage("Please Check Your Internet Connection")
-                .setPositiveButton("Ok",null)
+                .setPositiveButton("Ok", null)
                 .show()
 
-        }else {
+        } else {
 
 
             if (FirebaseAuth.getInstance().currentUser != null) {
@@ -41,7 +41,6 @@ class MainActivity : AppCompatActivity() {
 
                 val providers = arrayListOf(
                     AuthUI.IdpConfig.EmailBuilder().build(),
-                    AuthUI.IdpConfig.PhoneBuilder().build(),
                     AuthUI.IdpConfig.GoogleBuilder().build()
                 )
 
@@ -58,8 +57,7 @@ class MainActivity : AppCompatActivity() {
         }
 
 
-
-        }
+    }
 
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -75,20 +73,21 @@ class MainActivity : AppCompatActivity() {
 
             } else {
 
-                Toast.makeText(this,"Sorry Something Went Wrong :(",Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Sorry Something Went Wrong :(", Toast.LENGTH_SHORT).show()
 
             }
         }
     }
 
     private fun goNextfun() {
-        startActivity(Intent(this, UploadActivity::class.java))
+        startActivity(Intent(this, MyUploadActivity::class.java))
         this.finish()
     }
-    fun isInternet(activity:AppCompatActivity):Boolean{
-        val connectivityManager=activity.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val networkInfo=connectivityManager.activeNetworkInfo
-        return  networkInfo!=null && networkInfo.isConnected
+
+    fun isInternet(activity: AppCompatActivity): Boolean {
+        val connectivityManager = activity.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkInfo = connectivityManager.activeNetworkInfo
+        return networkInfo != null && networkInfo.isConnected
     }
 
 }

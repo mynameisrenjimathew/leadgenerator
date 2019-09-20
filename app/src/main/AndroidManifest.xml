@@ -13,6 +13,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.CALL_PHONE"/>
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
 
     <application
             android:allowBackup="true"
@@ -43,11 +44,12 @@
         <activity android:name=".ui.DocumentManager"
                   android:windowSoftInputMode="adjustResize">
         </activity>
-        <activity android:name=".ui.MyUploadActivity">
-        </activity>
         <activity android:name=".ui.UploadActivity"
                   android:windowSoftInputMode="adjustResize">
         </activity>
+        <activity android:name=".ui.MyUploadActivity">
+        </activity>
+
         <activity android:name=".ui.MainActivity">
             <intent-filter>
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
