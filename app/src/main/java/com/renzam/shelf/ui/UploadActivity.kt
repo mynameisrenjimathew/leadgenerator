@@ -5,10 +5,10 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.graphics.drawable.BitmapDrawable
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
@@ -18,7 +18,6 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.*
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -26,15 +25,14 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.firebase.ui.auth.AuthUI
-import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.renzam.shelf.R
 
 import com.renzam.shelf.data.ViewModel
 import com.renzam.shelf.databinding.ActivityUploadBinding
-import kotlinx.android.synthetic.main.activity_document_manager.*
 import kotlinx.android.synthetic.main.activity_upload.*
 import kotlin.collections.ArrayList
+import kotlin.properties.Delegates
 
 class UploadActivity : AppCompatActivity() {
 
@@ -43,10 +41,14 @@ class UploadActivity : AppCompatActivity() {
     lateinit var catogoreyList: ArrayList<String>
     lateinit var locationManager: LocationManager
     lateinit var bitmap: Bitmap
-    lateinit var viemodelDummy: ViewModel
+    lateinit var viemodelRef: ViewModel
     lateinit var locationListner: LocationListener
 
     lateinit var progressBar: ProgressBar
+
+    lateinit var image: Intent
+
+    var requestCodeImg by Delegates.notNull<Int>()
 
 
     //    @RequiresApi(Build.VERSION_CODES.M)
@@ -66,7 +68,9 @@ class UploadActivity : AppCompatActivity() {
 
 
 
-        viemodelDummy = viewModelCls
+        requestCodeImg = 1
+
+        viemodelRef = viewModelCls
 
         catogoreyList = ArrayList()
         catogoreyList.add("Select Category")
@@ -93,10 +97,10 @@ class UploadActivity : AppCompatActivity() {
 //        uploadImageView.setImageBitmap(myBitmap)
 
 
-        uploadImageView.invalidate()
-        var bitmapDrawable: BitmapDrawable = uploadImageView.drawable as BitmapDrawable
-        var bimapImagV: Bitmap = bitmapDrawable.bitmap
-        viemodelDummy.getBitmap(bimapImagV)
+        //uploadImageView.invalidate()
+       // var bitmapDrawable: BitmapDrawable = uploadImageView.drawable as BitmapDrawable
+        //var bimapImagV: Bitmap = bitmapDrawable.bitmap
+        //viemodelDummy.getBitmap(bimapImagV)
 
 
 
@@ -145,6 +149,8 @@ class UploadActivity : AppCompatActivity() {
                 ownerPhoneEditText.setText("")
 
                 uploadButton.isEnabled = true
+
+                finish()
 
 
             }
@@ -207,7 +213,7 @@ class UploadActivity : AppCompatActivity() {
             override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
                 val selectedItem = parent.getItemAtPosition(position).toString()
 
-                viemodelDummy.getCatagorey(selectedItem)
+                viemodelRef.getCatagorey(selectedItem)
                 if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
                     locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0L, 0f, locationListner)
@@ -228,7 +234,7 @@ class UploadActivity : AppCompatActivity() {
             override fun onLocationChanged(location: Location) {
 
 
-                viemodelDummy.getLocation(location.latitude, location.longitude)
+                viemodelRef.getLocation(location.latitude, location.longitude)
 
             }
 
@@ -287,12 +293,8 @@ class UploadActivity : AppCompatActivity() {
                 .show()
 
             return true
-        } else if (item.itemId == R.id.myUploads) {
+        } else{
 
-            startActivity(Intent(this, MyUploadActivity::class.java))
-            return true
-
-        } else {
             return super.onOptionsItemSelected(item)
         }
 
@@ -300,7 +302,7 @@ class UploadActivity : AppCompatActivity() {
 
     private fun getPhoto() {
         val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-        startActivityForResult(intent, 1)
+        startActivityForResult(intent, requestCodeImg)
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
@@ -316,18 +318,22 @@ class UploadActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        val selectedImage = data?.data
+        val selectedImage: Uri? = data?.data
+
 
         if (requestCode == 1 && resultCode == RESULT_OK && data != null) {
             try {
-                //val baos = ByteArrayOutputStream()
-                bitmap = MediaStore.Images.Media.getBitmap(this.contentResolver, selectedImage)
+//                //val baos = ByteArrayOutputStream()
+               bitmap = MediaStore.Images.Media.getBitmap(this.contentResolver, selectedImage)
                 uploadImageView.setImageBitmap(bitmap)
-                viemodelDummy.getBitmap(bitmap)
+
 
             } catch (e: Exception) {
                 e.printStackTrace()
             }
+
+            image = data
+            viemodelRef.getImage(image)
 
         }
 

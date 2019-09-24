@@ -4,7 +4,6 @@
           android:id="@+id/logout"/>
     <item android:title="Delete Account"
           android:id="@+id/delete_Account"/>
-    <item android:title="My Uploads"
-          android:id="@+id/myUploads"/>
+
 
 </menu>

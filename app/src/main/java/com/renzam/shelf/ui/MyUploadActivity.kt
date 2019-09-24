@@ -45,8 +45,6 @@ class MyUploadActivity : AppCompatActivity() {
             .orderBy("date", Query.Direction.DESCENDING)
 
 
-        recycleView.smoothScrollBy(2, 3)
-
         docRef.addSnapshotListener { querySnapshot, firebaseFirestoreException ->
 
 

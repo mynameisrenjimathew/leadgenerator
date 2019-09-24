@@ -13,15 +13,20 @@ import com.firebase.ui.auth.IdpResponse
 import com.google.firebase.auth.FirebaseAuth
 import com.renzam.shelf.R
 import android.content.BroadcastReceiver
+import android.view.View
+import android.widget.Button
 
 
 class MainActivity : AppCompatActivity() {
 
     val RC_SIGN_IN = 123
+    lateinit var internetErrorBtn: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        internetErrorBtn = findViewById(R.id.internerBtn)
 
         if (!isInternet(this)) {
 
@@ -30,6 +35,7 @@ class MainActivity : AppCompatActivity() {
                 .setMessage("Please Check Your Internet Connection")
                 .setPositiveButton("Ok", null)
                 .show()
+            internetErrorBtn.visibility = View.VISIBLE
 
         } else {
 
@@ -54,6 +60,30 @@ class MainActivity : AppCompatActivity() {
                     RC_SIGN_IN
                 )
             }
+        }
+        internetErrorBtn.setOnClickListener {
+
+            if (FirebaseAuth.getInstance().currentUser != null) {
+
+                goNextfun()
+            } else {
+
+                val providers = arrayListOf(
+                    AuthUI.IdpConfig.EmailBuilder().build(),
+                    AuthUI.IdpConfig.GoogleBuilder().build()
+                )
+
+                startActivityForResult(
+                    AuthUI.getInstance()
+                        .createSignInIntentBuilder()
+                        .setAvailableProviders(providers)
+                        .setTheme(R.style.AppTheme)
+                        .setLogo(R.drawable.loginicon)
+                        .build(),
+                    RC_SIGN_IN
+                )
+            }
+
         }
 
 

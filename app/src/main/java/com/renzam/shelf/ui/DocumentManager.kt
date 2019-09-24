@@ -14,6 +14,7 @@ import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.renzam.shelf.R
 import com.renzam.shelf.data.DmviewModel
+import com.renzam.shelf.data.Utils
 import com.renzam.shelf.data.ViewModel
 import com.renzam.shelf.databinding.ActivityUploadBinding
 import com.squareup.picasso.Picasso
@@ -39,7 +40,13 @@ class DocumentManager : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_document_manager)
 
+      /** access Utils Class ...
+       *  var utils = Utils()
 
+        if(utils.isInternet(this)){
+
+        }
+*/
         businessNameEt = findViewById(R.id.businessNameEt)
         placeNameEt = findViewById(R.id.placeNameEt)
         ownerNameEt = findViewById(R.id.ownerNameEt)
@@ -155,6 +162,10 @@ class DocumentManager : AppCompatActivity() {
         }
         edtBtn.setOnClickListener {
 
+            if (FieldChecking() == "Ok"){
+
+
+
             AlertDialog.Builder(this)
                 .setTitle("Update Document")
                 .setMessage("Do You Want To Update It")
@@ -187,7 +198,10 @@ class DocumentManager : AppCompatActivity() {
                 }
                 .create()
                 .show()
+            }else{
 
+                Toast.makeText(this,FieldChecking(),Toast.LENGTH_SHORT).show()
+            }
         }
 
         imageView.setOnClickListener {
@@ -199,5 +213,23 @@ class DocumentManager : AppCompatActivity() {
         }
 
 
+    }
+
+    fun FieldChecking():String{
+
+        if (catogoreyList[spinner.selectedItemPosition] == "Select Category"){
+            return "You Must Select a Category"
+        }else if (businessNameEt.text.toString().trim() == ""){
+            return "Please Fill Business Name"
+        }else if (ownerNameEt.text.toString().trim() == ""){
+            return "Please Fill Owner Name"
+        }else if (placeNameEt.text.toString().trim() == ""){
+            return "Please Fill Place Name"
+        }else if (phoneNumber.text.toString().trim() == ""){
+            return "Please Fill Place Name"
+        }else {
+
+            return "Ok"
+        }
     }
 }

@@ -5,7 +5,6 @@
     <data>
 
 
-
     </data>
     <LinearLayout
             android:layout_width="match_parent"
@@ -49,8 +48,7 @@
                         android:singleLine="true"
                         android:nextFocusDown="@+id/placenameEditText"
                         android:backgroundTint="#11161A"
-                        android:hint="Enter Business Name"
-                        android:fontFamily="casual">
+                        android:hint="Enter Business Name">
 
                 </EditText>
                 <EditText
@@ -62,8 +60,7 @@
                         android:backgroundTint="#11161A"
                         android:singleLine="true"
                         android:nextFocusDown="@+id/ownerNameEditText"
-                        android:hint="Enter Place Name"
-                        android:fontFamily="casual"/>
+                        android:hint="Enter Place Name"/>
                 <EditText
                         android:id="@+id/ownerNameEt"
                         android:layout_width="match_parent"
@@ -72,8 +69,7 @@
                         android:singleLine="true"
                         android:layout_height="wrap_content"
                         android:backgroundTint="#11161A"
-                        android:hint="Enter Owner Name"
-                        android:fontFamily="casual"/>
+                        android:hint="Enter Owner Name"/>
                 <EditText
                         android:id="@+id/phoneNumberEt"
                         android:layout_width="match_parent"
@@ -83,34 +79,32 @@
                         android:backgroundTint="#11161A"
                         android:inputType="phone"
                         android:maxLength="10"
-                        android:hint="Enter Phone Number"
-                        android:fontFamily="casual"/>
+                        android:hint="Enter Phone Number"/>
                 <LinearLayout android:layout_width="match_parent"
                               android:layout_height="wrap_content"
                               android:layout_gravity="center"
                               android:orientation="horizontal">
                     <Button
-                    android:text="Update"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/editFieldBtn"
-                    android:background="@drawable/shape"
-                    android:layout_marginLeft="100dp"
-                    android:textAllCaps="false"
-                    android:layout_marginTop="24dp"/>
+                            android:text="Update"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/editFieldBtn"
+                            android:background="@drawable/shape"
+                            android:layout_marginLeft="100dp"
+                            android:textAllCaps="false"
+                            android:layout_marginTop="24dp"/>
                     <Button
-                    android:text="Delete"
-                    android:textAllCaps="false"
-                    android:layout_marginLeft="5dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/deleteBtn"
-                    android:background="@drawable/shape"
-                    android:layout_marginTop="24dp"/>
+                            android:text="Delete"
+                            android:textAllCaps="false"
+                            android:layout_marginLeft="5dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/deleteBtn"
+                            android:background="@drawable/shape"
+                            android:layout_marginTop="24dp"/>
 
 
                 </LinearLayout>
-
 
 
             </LinearLayout>

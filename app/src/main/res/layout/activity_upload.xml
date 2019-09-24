@@ -58,8 +58,7 @@
                         android:text="@={viewmodel.bussinessName}"
                         android:nextFocusDown="@+id/placenameEditText"
                         android:backgroundTint="#11161A"
-                        android:hint="Enter Business Name"
-                        android:fontFamily="casual">
+                        android:hint="Enter Business Name">
 
                 </EditText>
                 <EditText
@@ -72,8 +71,7 @@
                         android:singleLine="true"
                         android:text="@={viewmodel.placeName}"
                         android:nextFocusDown="@+id/ownerNameEditText"
-                        android:hint="Enter Place Name"
-                        android:fontFamily="casual"/>
+                        android:hint="Enter Place Name"/>
                 <EditText
                         android:id="@+id/ownerNameEditText"
                         android:layout_width="match_parent"
@@ -83,8 +81,7 @@
                         android:layout_height="wrap_content"
                         android:backgroundTint="#11161A"
                         android:text="@={viewmodel.ownerName}"
-                        android:hint="Enter Owner Name"
-                        android:fontFamily="casual"/>
+                        android:hint="Enter Owner Name"/>
                 <EditText
                         android:id="@+id/ownerPhoneEditText"
                         android:layout_width="match_parent"
@@ -95,8 +92,7 @@
                         android:backgroundTint="#11161A"
                         android:inputType="phone"
                         android:maxLength="10"
-                        android:hint="Enter Phone Number"
-                        android:fontFamily="casual"/>
+                        android:hint="Enter Phone Number"/>
                 <Button
                         android:layout_above="@+id/scrollView"
                         android:id="@+id/uploadButton"
@@ -107,7 +103,6 @@
                         android:onClick="@{() -> viewmodel.getDatas()}"
                         android:text="Submit"
                         android:background="@drawable/shape"
-                        android:fontFamily="sans-serif-medium"
                         android:textAllCaps="false"
                         android:gravity="center_horizontal"
                         android:textSize="20sp"/>
